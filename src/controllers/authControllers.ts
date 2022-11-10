@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
+import { User, UserEntity, UserLogin } from "../protocols/user.js";
 import { v4 as uuid } from "uuid";
 import { STATUS_CODE } from "../enums/statusCode.js";
 import {
@@ -12,8 +13,8 @@ import {
 
 export async function postSignUp(req: Request, res: Response) {
     try {
-        const { email, password, username } = req.body;
-        const registerUser = await insertUser(email);
+        const user = req.body as User;
+        const registerUser = await insertUser(user.email);
 
         if (registerUser.rows.length != 0) {
             return res
@@ -21,7 +22,7 @@ export async function postSignUp(req: Request, res: Response) {
                 .send("Este email já está sendo utilizado!");
         }
 
-        const registerUsername = await insertUsername(username);
+        const registerUsername = await insertUsername(user.username);
 
         if (registerUsername.rows.length != 0) {
             return res
@@ -29,8 +30,8 @@ export async function postSignUp(req: Request, res: Response) {
                 .send("Este username já está sendo utilizado!");
         }
 
-        const passwordHash = bcrypt.hashSync(password, 10);
-        await insertUserId(username, email, passwordHash);
+        const passwordHash = bcrypt.hashSync(user.password, 10);
+        await insertUserId(user.username, user.email, passwordHash);
 
         return res.sendStatus(STATUS_CODE.CREATED);
     } catch (error) {
@@ -40,15 +41,18 @@ export async function postSignUp(req: Request, res: Response) {
 
 export async function postSignIn(req: Request, res: Response) {
     try {
-        const { email, password } = req.body;
-        const verifyUser = await getUserByEmail(email);
+        const user = req.body as UserLogin;
+        const verifyUser = await getUserByEmail(user.email);
 
-        const validUser = verifyUser.rows[0];
+        const validUser: UserEntity = verifyUser.rows[0];
         if (verifyUser.rows.length === 0) {
             return res.sendStatus(STATUS_CODE.UNAUTHORIZED);
         }
 
-        const passwordValid = bcrypt.compareSync(password, validUser.password);
+        const passwordValid = bcrypt.compareSync(
+            user.password,
+            validUser.password
+        );
 
         if (verifyUser.rows.length != 0 && passwordValid) {
             const token = uuid();

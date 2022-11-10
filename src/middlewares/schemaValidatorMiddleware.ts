@@ -1,4 +1,4 @@
-import { STATUS_CODE } from "../enums/statusCode.js";
+import { STATUS_CODE } from "../enums/statusCode";
 import { NextFunction, Request, Response } from "express";
 import { MessageName } from "pg-protocol/dist/messages.js";
 

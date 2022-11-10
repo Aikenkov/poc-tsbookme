@@ -1,5 +1,6 @@
 import connection from "../database/database.js";
 import { QueryResult } from "pg";
+import { User, UserEntity } from "../protocols/user.js";
 
 export async function insertUser(email: string): Promise<QueryResult> {
     return await connection.query(
@@ -57,6 +58,10 @@ export async function insertUserSession(
         `,
         [validUser_id, token]
     );
+}
+
+export async function getSessionByToken(token: string): Promise<QueryResult> {
+    return connection.query(`SELECT * FROM sessions WHERE token=$1;`, [token]);
 }
 
 export async function getUserByEmail(email: string): Promise<QueryResult> {
