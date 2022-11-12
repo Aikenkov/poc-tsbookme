@@ -6,6 +6,9 @@ import {
     unfavoriteBook,
     markBookAsRead,
     markBookAsUnRead,
+    listUserReadedBooks,
+    listUserFavoriteBooks,
+    readedCounter,
 } from "../controllers/boooksController.js";
 import { validateSchema } from "../middlewares/schemaValidatorMiddleware.js";
 import { insertBookSchema } from "../schemas/newBookSchema.js";
@@ -15,7 +18,7 @@ const bookRouter = Router();
 
 bookRouter.get("/book", listBooks);
 bookRouter.post("/userbook/:book_id", validateToken, favoriteBook);
-bookRouter.delete("/userbook/:book_id", validateToken, unfavoriteBook);
+bookRouter.delete("/userbook/:id", validateToken, unfavoriteBook);
 bookRouter.put("/read/:id", validateToken, markBookAsRead);
 bookRouter.put("/unread/:id", validateToken, markBookAsUnRead);
 bookRouter.post(
@@ -24,5 +27,8 @@ bookRouter.post(
     validateSchema(insertBookSchema),
     insertBook
 );
+bookRouter.get("/user/readed", validateToken, listUserReadedBooks);
+bookRouter.get("/user/favorite", validateToken, listUserFavoriteBooks);
+bookRouter.get("/user/count", validateToken, readedCounter);
 
 export { bookRouter };

@@ -10,62 +10,76 @@ import {
     insertUsername,
     insertUserSession,
 } from "../repositories/authRepository.js";
+import { QueryResult } from "pg";
 
 export async function postSignUp(req: Request, res: Response) {
     try {
         const user = req.body as User;
-        const registerUser = await insertUser(user.email);
+        const registerUser: QueryResult<UserEntity> = await insertUser(
+            user.email
+        );
 
-        if (registerUser.rows.length != 0) {
-            return res
-                .status(STATUS_CODE.CONFLICT)
-                .send("Este email já está sendo utilizado!");
+        if (registerUser.rowCount != 0) {
+            res.status(STATUS_CODE.CONFLICT).send(
+                "Este email já está sendo utilizado!"
+            );
+            return;
         }
 
-        const registerUsername = await insertUsername(user.username);
+        const registerUsername: QueryResult<UserEntity> = await insertUsername(
+            user.name
+        );
 
-        if (registerUsername.rows.length != 0) {
-            return res
-                .status(STATUS_CODE.CONFLICT)
-                .send("Este username já está sendo utilizado!");
+        if (registerUsername.rowCount != 0) {
+            res.status(STATUS_CODE.CONFLICT).send(
+                "Este username já está sendo utilizado!"
+            );
+            return;
         }
 
-        const passwordHash = bcrypt.hashSync(user.password, 10);
-        await insertUserId(user.username, user.email, passwordHash);
+        const passwordHash: string = bcrypt.hashSync(user.password, 10);
 
-        return res.sendStatus(STATUS_CODE.CREATED);
+        await insertUserId(user.name, user.email, passwordHash);
+        res.sendStatus(STATUS_CODE.CREATED);
+        return;
     } catch (error) {
-        return res.sendStatus(STATUS_CODE.SERVER_ERROR);
+        res.sendStatus(STATUS_CODE.SERVER_ERROR);
+        return;
     }
 }
 
 export async function postSignIn(req: Request, res: Response) {
     try {
         const user = req.body as UserLogin;
-        const verifyUser = await getUserByEmail(user.email);
+        const verifyUser: QueryResult<UserEntity> = await getUserByEmail(
+            user.email
+        );
 
         const validUser: UserEntity = verifyUser.rows[0];
         if (verifyUser.rows.length === 0) {
-            return res.sendStatus(STATUS_CODE.UNAUTHORIZED);
+            res.sendStatus(STATUS_CODE.UNAUTHORIZED);
+            return;
         }
 
-        const passwordValid = bcrypt.compareSync(
+        const passwordValid: boolean = bcrypt.compareSync(
             user.password,
             validUser.password
         );
 
         if (verifyUser.rows.length != 0 && passwordValid) {
-            const token = uuid();
+            const token: string = uuid();
             await insertUserSession(validUser.id, token);
 
-            return res.status(STATUS_CODE.OK).send({
+            res.status(STATUS_CODE.OK).send({
                 token: token,
-                username: validUser.username,
+                name: validUser.name,
             });
+            return;
         } else {
-            return res
-                .status(STATUS_CODE.UNAUTHORIZED)
-                .send("email ou senha inválidos");
+            res.status(STATUS_CODE.UNAUTHORIZED).send(
+                "email ou senha inválidos"
+            );
+            return;
         }
     } catch (error) {
         return res.sendStatus(500);

@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { authRouter } from "./authRoutes.js";
-import { bookRouter } from "./booksRoutes";
+import { bookRouter } from "./booksRoutes.js";
 
 const router = Router();
 

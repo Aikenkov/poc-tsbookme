@@ -1,6 +1,5 @@
-import { STATUS_CODE } from "../enums/statusCode";
+import { STATUS_CODE } from "../enums/statusCode.js";
 import { NextFunction, Request, Response } from "express";
-import { MessageName } from "pg-protocol/dist/messages.js";
 
 export function validateSchema(schema) {
     return (req: Request, res: Response, next: NextFunction) => {
