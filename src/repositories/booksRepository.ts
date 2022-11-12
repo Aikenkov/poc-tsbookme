@@ -3,7 +3,7 @@ import { Book, BookEntity } from "../protocols/book.js";
 import { QueryResult } from "pg";
 import { Count } from "../protocols/count.js";
 
-export async function listAllBooks(): Promise<QueryResult> {
+export async function listAllBooks(): Promise<QueryResult<BookEntity>> {
     return await connection.query(
         `
             SELECT * FROM books;
@@ -17,7 +17,6 @@ export async function insertNewBook(book: Book): Promise<QueryResult> {
             INSERT INTO books
             (name, image, category_id)
             VALUES ($1, $2, $3)
-            RETURNING *
         `,
         [book.name, book.image, book.category_id]
     );

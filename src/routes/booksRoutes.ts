@@ -9,7 +9,7 @@ import {
     listUserReadedBooks,
     listUserFavoriteBooks,
     readedCounter,
-} from "../controllers/boooksController.js";
+} from "../controllers/booksController.js";
 import { validateSchema } from "../middlewares/schemaValidatorMiddleware.js";
 import { insertBookSchema } from "../schemas/newBookSchema.js";
 import { validateToken } from "../middlewares/authMiddleware.js";
