@@ -31,3 +31,11 @@ export async function removeCategory(id: number): Promise<QueryResult> {
         [id]
     );
 }
+
+export async function listCategories(): Promise<QueryResult<CategoryEntity>> {
+    return await connection.query(
+        `
+            SELECT * FROM categories;
+        `
+    );
+}

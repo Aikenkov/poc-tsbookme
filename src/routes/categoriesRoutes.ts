@@ -6,6 +6,7 @@ import { validateToken } from "../middlewares/authMiddleware.js";
 import {
     deleteCategory,
     insertCategory,
+    listAllCategories,
 } from "../controllers/categoriesController.js";
 
 const categoryRouter = Router();
@@ -16,7 +17,7 @@ categoryRouter.post(
     validateToken,
     insertCategory
 );
-
 categoryRouter.delete("/category/:id", validateToken, deleteCategory);
+categoryRouter.get("/category", listAllCategories);
 
 export { categoryRouter };
