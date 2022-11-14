@@ -62,3 +62,11 @@ GET /user/favorite (verificada)
 
 * Obter quantidade de livros lidos
 GET /user/count (verificada)
+
+# Como Testar
+
+* Clone o projeto
+* npm i (instalar dependências)
+* configure o arquivo .env usando o .env.exemple como referência (roda localmente)
+* rodar o dump
+
